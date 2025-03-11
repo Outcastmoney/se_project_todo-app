@@ -91,6 +91,9 @@
   padding: 20px 12px;
   transition: border 0.3s;
 }
+.popup__input:hover {
+  opacity: 40%;
+}
 
 .popup__input::placeholder {
   color: #7d7d7d;
