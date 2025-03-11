@@ -1,7 +1,7 @@
 class FormValidator {
   constructor(settings, formEl) {
+    this._settings = settings;
     this._inputSelector = settings.inputSelector;
-    this._formSelector = settings.formSelector;
     this._submitButtonSelector = settings.submitButtonSelector;
     this._errorClass = settings.errorClass;
     this._inputErrorClass = settings.inputErrorClass;
@@ -10,15 +10,41 @@ class FormValidator {
   }
 
   _checkInputValidity(inputElement) {
+    if (!inputElement) return;
+    const errorElement = this._formEl.querySelector(
+      `#${inputElement.id}-error`
+    );
+
+    if (!errorElement) {
+      console.warn(`Error element for ${inputElement.id} not found.`);
+      return;
+    }
+
     if (!inputElement.validity.valid) {
-      showInputError(
-        formElement,
-        inputElement,
-        inputElement.validationMessage,
-        settings
-      );
+      inputElement.classList.add(this._inputErrorClass);
+      errorElement.textContent = inputElement.validationMessage;
+      errorElement.classList.add(this._errorClass);
     } else {
-      hideInputError(formElement, inputElement, settings);
+      inputElement.classList.remove(this._inputErrorClass);
+      errorElement.textContent = "";
+      errorElement.classList.remove(this._errorClass);
+    }
+  }
+
+  _toggleButtonState() {
+    if (!this._inputList || !this._buttonElement) {
+      console.warn("FormValidator: Input list or submit button not found.");
+      return;
+    }
+
+    const isFormValid = this._inputList.every((input) => input.validity.valid);
+
+    if (isFormValid) {
+      this._buttonElement.classList.remove(this._inactiveButtonClass);
+      this._buttonElement.disabled = false;
+    } else {
+      this._buttonElement.classList.add(this._inactiveButtonClass);
+      this._buttonElement.disabled = true;
     }
   }
 
@@ -26,16 +52,21 @@ class FormValidator {
     this._inputList = Array.from(
       this._formEl.querySelectorAll(this._inputSelector)
     );
-    const buttonElement = formElement.querySelector(
-      settings.submitButtonSelector
+    this._buttonElement = this._formEl.querySelector(
+      this._submitButtonSelector
     );
 
-    toggleButtonState(inputList, buttonElement, settings);
+    if (!this._inputList.length || !this._buttonElement) {
+      console.warn("FormValidator: No inputs or button found.");
+      return;
+    }
 
-    inputList.forEach((inputElement) => {
+    this._toggleButtonState();
+
+    this._inputList.forEach((inputElement) => {
       inputElement.addEventListener("input", () => {
         this._checkInputValidity(inputElement);
-        toggleButtonState(inputList, buttonElement, settings);
+        this._toggleButtonState();
       });
     });
   }
