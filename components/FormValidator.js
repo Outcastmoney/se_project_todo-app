@@ -8,7 +8,6 @@ class FormValidator {
     this._inactiveButtonClass = settings.inactiveButtonClass;
     this._formEl = formEl;
 
-  
     this._inputList = Array.from(
       this._formEl.querySelectorAll(this._inputSelector)
     );
@@ -75,6 +74,9 @@ class FormValidator {
   resetValidation() {
     this._inputList.forEach((inputElement) => {
       this._checkInputValidity(inputElement);
+
+      this._formEl.reset();
+      this._toggleButtonState();
     });
 
     this._toggleButtonState();
