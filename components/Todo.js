@@ -1,7 +1,8 @@
 class Todo {
-  constructor(data, selector) {
+  constructor(data, selector, onUpdate) {
     this._data = data;
     this._templateElement = document.querySelector(selector);
+    this._onUpdate = onUpdate;
 
     if (!this._templateElement) {
       console.warn(`Todo template "${selector}" not found.`);
@@ -21,6 +22,7 @@ class Todo {
     todoDeleteBtn.addEventListener("click", () => {
       this._todoElement.remove();
       console.log(`Todo "${this._data.name}" has been deleted.`);
+      if (this._onUpdate) this._onUpdate();
     });
 
     todoCheckboxEl.addEventListener("change", () => {
@@ -32,6 +34,7 @@ class Todo {
       console.log(
         `Todo "${this._data.name}" completed status: ${this._data.completed}`
       );
+      if (this._onUpdate) this._onUpdate();
     });
   }
 
