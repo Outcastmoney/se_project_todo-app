@@ -12,23 +12,32 @@ class TodoCounter {
     this._updateText();
   }
 
-  updateCompleted = (increment) => {
+  updateCount() {
+    const todos = document.querySelectorAll('.todo');
+    this._total = todos.length;
+    this._completed = [...todos].filter(
+      todo => todo.querySelector('.todo__completed').checked
+    ).length;
+    this._updateText();
+  }
+
+  updateCompleted(increment) {
     if (increment) {
       this._completed++;
     } else {
       this._completed = Math.max(0, this._completed - 1);
     }
     this._updateText();
-  };
+  }
 
-  updateTotal = (increment) => {
+  updateTotal(increment) {
     if (increment) {
       this._total++;
     } else {
       this._total = Math.max(0, this._total - 1);
     }
     this._updateText();
-  };
+  }
 
   _updateText() {
     if (this._element) {

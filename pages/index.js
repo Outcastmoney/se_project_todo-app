@@ -10,11 +10,8 @@ import TodoCounter from "../components/TodoCounter.js";
 const addTodoButton = document.querySelector(".button_action_add");
 const addTodoPopupEl = document.querySelector("#add-todo-popup");
 const addTodoForm = document.forms["add-todo-form"];
-const addTodoCloseBtn = addTodoPopupEl.querySelector(".popup__close");
 const counterText = document.querySelector(".counter__text");
 const todoCounter = new TodoCounter(initialTodos, ".counter__text");
-
-
 
 const addTodoPopup = new PopupWithForm({
   popupSelector: "#add-todo-popup",
@@ -30,32 +27,38 @@ const addTodoPopup = new PopupWithForm({
     }
 
     const id = uuidv4();
-    const todoValues = { name, date: adjustedDate, id };
+    const todoValues = { name, date: adjustedDate, id, completed: false };
     console.log("Creating todo with values:", todoValues);
     renderTodo(todoValues);
-    todoCounter.updateTotal(true);
+    todoCounter.updateCount();
     addTodoPopup.close();
   },
 });
 
 addTodoPopup.setEventListeners();
 
+function handleEscapeClose(evt) {
+  if (evt.key === "Escape") {
+    addTodoPopup.close();
+    document.removeEventListener("keyup", handleEscapeClose);
+  }
+}
+
 addTodoButton.addEventListener("click", () => {
   console.log("Add todo button clicked");
   addTodoPopup.open();
+  document.addEventListener("keyup", handleEscapeClose);
 });
-
 const updateCounter = () => {
-  const todos = Array.from(document.querySelectorAll(".todo"));
-  const completedTodos = todos.filter(
+  const todos = document.querySelectorAll(".todo");
+  const completedTodos = [...todos].filter(
     (todo) => todo.querySelector(".todo__completed").checked
   ).length;
   counterText.textContent = `Showing ${completedTodos} out of ${todos.length} completed`;
 };
 
 const generateTodo = (data) => {
-  const todo = new Todo(data, "#todo-template", hadnleCheck);
-  return todo.getView();
+  return new Todo(data, "#todo-template", handleCheck, handleDelete).getView();
 };
 
 const section = new Section({
@@ -72,23 +75,14 @@ section.renderItems();
 const renderTodo = (item) => {
   const todo = generateTodo(item);
   section.addItem(todo);
-  updateCounter();
 };
-function hadnleCheck(completed) {
-  todoCounter.updateCompleted(completed);
-}
-function handleDelete() { if (completed) {
-  todoCounter.updateCompleted(false);
-} else {
-  todoCounter.updateTotal(false);
-}
+
+function handleCheck(completed) {
+  todoCounter.updateCount();
 }
 
-function handleEscapeClose(evt) {
-  if (evt.key === "Escape") {
-    addTodoPopup.close();
-    document.removeEventListener("keyup", handleEscapeClose);
-  }
+function handleDelete() {
+  todoCounter.updateCount();
 }
 
 const newTodoValidator = new FormValidator(validationConfig, addTodoForm);
