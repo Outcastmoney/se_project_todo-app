@@ -5,19 +5,20 @@ import Todo from "../components/Todo.js";
 import FormValidator from "../components/FormValidator.js";
 import Section from "../components/Section.js";
 import PopupWithForm from "../components/PopupWithForm.js";
+import TodoCounter from "../components/TodoCounter.js";
 
 const addTodoButton = document.querySelector(".button_action_add");
 const addTodoPopupEl = document.querySelector("#add-todo-popup");
 const addTodoForm = document.forms["add-todo-form"];
 const addTodoCloseBtn = addTodoPopupEl.querySelector(".popup__close");
 const counterText = document.querySelector(".counter__text");
+const todoCounter = new TodoCounter(initialTodos, ".counter__text");
 
-console.log('Form element from document.forms:', addTodoForm); 
+
 
 const addTodoPopup = new PopupWithForm({
   popupSelector: "#add-todo-popup",
   handleFormSubmit: (values) => {
-    console.log('Received form values:', values);
     const { name, date: dateInput } = values;
 
     let adjustedDate = null;
@@ -30,18 +31,17 @@ const addTodoPopup = new PopupWithForm({
 
     const id = uuidv4();
     const todoValues = { name, date: adjustedDate, id };
-    console.log('Creating todo with values:', todoValues);
+    console.log("Creating todo with values:", todoValues);
     renderTodo(todoValues);
-
+    todoCounter.updateTotal(true);
     addTodoPopup.close();
   },
 });
 
-
 addTodoPopup.setEventListeners();
 
 addTodoButton.addEventListener("click", () => {
-  console.log('Add todo button clicked');
+  console.log("Add todo button clicked");
   addTodoPopup.open();
 });
 
@@ -54,7 +54,7 @@ const updateCounter = () => {
 };
 
 const generateTodo = (data) => {
-  const todo = new Todo(data, "#todo-template", updateCounter);
+  const todo = new Todo(data, "#todo-template", hadnleCheck);
   return todo.getView();
 };
 
@@ -74,6 +74,15 @@ const renderTodo = (item) => {
   section.addItem(todo);
   updateCounter();
 };
+function hadnleCheck(completed) {
+  todoCounter.updateCompleted(completed);
+}
+function handleDelete() { if (completed) {
+  todoCounter.updateCompleted(false);
+} else {
+  todoCounter.updateTotal(false);
+}
+}
 
 function handleEscapeClose(evt) {
   if (evt.key === "Escape") {
