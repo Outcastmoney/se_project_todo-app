@@ -5,16 +5,16 @@ class Popup {
 
     this._handleEscapeClose = this._handleEscapeClose.bind(this);
     this._handleOverlayClose = this._handleOverlayClose.bind(this);
-
-    this.setEventListeners();
   }
 
   open() {
+    console.log('Opening popup')
     this._popupElement.classList.add("popup_visible");
     document.addEventListener("keyup", this._handleEscapeClose);
   }
 
   close() {
+    console.log('Closing popup');
     this._popupElement.classList.remove("popup_visible");
     document.removeEventListener("keyup", this._handleEscapeClose);
   }
@@ -33,11 +33,12 @@ class Popup {
   }
 
   setEventListeners() {
+    console.log('Setting up base popup event listeners');
     if (this._popupCloseButton) {
-      this._popupCloseButton.addEventListener("click", (evt) => this.close());
+      this._popupCloseButton.addEventListener("click", () => this.close());
     }
 
-    this._popupElement.addEventListener("mousedown", this._handleOverlayClose);
+    this._popupElement.addEventListener("mousedown", this._handleOverlayClose.bind(this));
   }
 }
 
