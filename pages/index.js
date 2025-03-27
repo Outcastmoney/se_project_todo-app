@@ -30,26 +30,24 @@ const addTodoPopup = new PopupWithForm({
     const todoValues = { name, date: adjustedDate, id, completed: false };
     console.log("Creating todo with values:", todoValues);
     renderTodo(todoValues);
-    todoCounter.updateCount();
+    todoCounter.updateCount(initialTodos);
     addTodoPopup.close();
   },
 });
 
 addTodoPopup.setEventListeners();
 
-function handleEscapeClose(evt) {
+(evt) {
   if (evt.key === "Escape") {
     addTodoPopup.close();
-    document.removeEventListener("keyup", handleEscapeClose);
   }
 }
 
 addTodoButton.addEventListener("click", () => {
   console.log("Add todo button clicked");
   addTodoPopup.open();
-  document.addEventListener("keyup", handleEscapeClose);
 });
-const updateCounter = () => {
+
   const todos = document.querySelectorAll(".todo");
   const completedTodos = [...todos].filter(
     (todo) => todo.querySelector(".todo__completed").checked

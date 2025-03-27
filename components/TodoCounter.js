@@ -13,7 +13,6 @@ class TodoCounter {
   }
 
   updateCount() {
-    const todos = document.querySelectorAll('.todo');
     this._total = todos.length;
     this._completed = [...todos].filter(
       todo => todo.querySelector('.todo__completed').checked
