@@ -1,47 +1,17 @@
 class TodoCounter {
-  constructor(todos, selector) {
-    this._element = document.querySelector(selector);
-
-    if (!this._element) {
-      console.warn(`Counter element with selector "${selector}" not found.`);
-      return;
-    }
-
-    this._completed = todos.filter((todo) => todo.completed).length;
-    this._total = todos.length;
-    this._updateText();
+  constructor(initialTodos) {
+    this._total = initialTodos.length;
+    this._completed = initialTodos.filter(todo => todo.completed).length;
   }
 
-  updateCount() {
-    this._total = todos.length;
-    this._completed = [...todos].filter(
-      todo => todo.querySelector('.todo__completed').checked
-    ).length;
-    this._updateText();
+  updateCount(completedCount, totalCount) {
+    this._completed = completedCount;
+    this._total = totalCount;
+    return this.getText();
   }
 
-  updateCompleted(increment) {
-    if (increment) {
-      this._completed++;
-    } else {
-      this._completed = Math.max(0, this._completed - 1);
-    }
-    this._updateText();
-  }
-
-  updateTotal(increment) {
-    if (increment) {
-      this._total++;
-    } else {
-      this._total = Math.max(0, this._total - 1);
-    }
-    this._updateText();
-  }
-
-  _updateText() {
-    if (this._element) {
-      this._element.textContent = `Showing ${this._completed} out of ${this._total} completed`;
-    }
+  getText() {
+    return `Showing ${this._completed} out of ${this._total} completed`;
   }
 }
 
