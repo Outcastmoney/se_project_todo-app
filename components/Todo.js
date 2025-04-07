@@ -1,51 +1,38 @@
 class Todo {
-  constructor(data, selector, onUpdate, handleCheck, handleDelete) {
+  constructor(data, selector, handleCheck, handleDelete) {
     this._data = data;
     this._templateElement = document.querySelector(selector);
-    this._onUpdate = onUpdate;
     this._handleCheck = handleCheck;
     this._handleDelete = handleDelete;
-
-    if (!this._templateElement) {
-      console.warn(`Todo template "${selector}" not found.`);
-      return;
-    }
   }
 
   _setEventListeners() {
+    this._checkboxEl = this._todoElement.querySelector(".todo__completed");
+    this._deleteBtnEl = this._todoElement.querySelector(".todo__delete-btn");
     if (!this._todoElement) {
       console.warn("Todo element is not initialized.");
       return;
     }
 
-    const todoCheckboxEl = this._todoElement.querySelector(".todo__completed");
-    const todoDeleteBtn = this._todoElement.querySelector(".todo__delete-btn");
-
-    if (!todoCheckboxEl || !todoDeleteBtn) {
+    if (!this._checkboxEl || !this._deleteBtnEl) {
       console.warn("Required elements not found within the todo item.");
       return;
     }
 
-    todoCheckboxEl.addEventListener("change", () => {
-      this._data.completed = todoCheckboxEl.checked;
+    this._checkboxEl.addEventListener("change", () => {
+      this._data.completed = this._checkboxEl.checked;
       this._todoElement.classList.toggle(
         "todo--completed",
         this._data.completed
       );
-      console.log(
-        `Todo "${this._data.name}" completed status: ${this._data.completed}`
-      );
 
-      if (this._onUpdate) this._onUpdate(this._data.completed, this._data.id);
       if (this._handleCheck) this._handleCheck(this._data.completed);
     });
 
-    todoDeleteBtn.addEventListener("click", () => {
-      this._todoElement.remove();
-      console.log(`Todo "${this._data.name}" has been deleted.`);
+    this._deleteBtnEl.addEventListener("click", () => {
+      this._remove();
 
-      if (this._handleDelete) this._handleDelete(this._data.id);
-      if (this._onUpdate) this._onUpdate(this._data.completed, this._data.id);
+      if (this._handleDelete) this._handleDelete(this._data.completed);
     });
   }
 
@@ -67,6 +54,10 @@ class Todo {
     todoCheckboxEl.id = `todo-${this._data.id}`;
     todoLabel.setAttribute("for", `todo-${this._data.id}`);
   }
+
+  _remove = () => {
+    this._todoElement.remove();
+  };
 
   getView() {
     if (!this._templateElement) {

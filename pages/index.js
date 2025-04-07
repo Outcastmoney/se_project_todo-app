@@ -7,9 +7,8 @@ import PopupWithForm from "../components/PopupWithForm.js";
 import TodoCounter from "../components/TodoCounter.js";
 
 const addTodoButton = document.querySelector(".button_action_add");
-const addTodoPopupEl = document.querySelector("#add-todo-popup");
 const addTodoForm = document.forms["add-todo-form"];
-const counterText = document.querySelector(".counter__text");
+
 const todoCounter = new TodoCounter(initialTodos);
 
 const addTodoPopup = new PopupWithForm({
@@ -21,24 +20,16 @@ const addTodoPopup = new PopupWithForm({
 
     const id = uuidv4();
     const todoValues = { name, date: adjustedDate, id, completed: false };
-    console.log("Creating todo with values:", todoValues);
 
     renderTodo(todoValues);
-    updateTodoCounter();
+    todoCounter.updateTotal(true);
     addTodoPopup.close();
   },
 });
 
 addTodoPopup.setEventListeners();
 
-document.addEventListener("keydown", (evt) => {
-  if (evt.key === "Escape") {
-    addTodoPopup.close();
-  }
-});
-
 addTodoButton.addEventListener("click", () => {
-  console.log("Add todo button clicked");
   addTodoPopup.open();
 });
 
@@ -57,27 +48,19 @@ const section = new Section({
 const renderTodo = (item) => {
   const todo = generateTodo(item);
   section.addItem(todo);
-  updateTodoCounter();
 };
 
-section.renderItems();
+section.renderItems(true);
 
-function handleCheck() {
-  updateTodoCounter();
+function handleCheck(completed) {
+  todoCounter.updateCompleted(completed);
 }
 
-function handleDelete() {
-  updateTodoCounter();
-}
-
-function updateTodoCounter() {
-  const todos = document.querySelectorAll(".todo");
-  const completedCount = [...todos].filter(
-    todo => todo.querySelector(".todo__completed").checked
-  ).length;
-  const totalCount = todos.length;
-  
-  counterText.textContent = todoCounter.updateCount(completedCount, totalCount);
+function handleDelete(completed) {
+  if (completed) {
+    todoCounter.updateCompleted(false);
+  }
+  todoCounter.updateTotal(false);
 }
 
 const newTodoValidator = new FormValidator(validationConfig, addTodoForm);
